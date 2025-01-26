@@ -36,7 +36,7 @@ To communicate with friends, to see memes and news from different communities. T
 4. DOM content load less than 1000ms, general load less than 2000ms
 5. [RTT](https://habr.com/ru/companies/vk/articles/594633/#:~:text=%D0%BF%D0%B5%D1%80%D1%86%D0%B5%D0%BD%D1%82%D0%B8%D0%BB%D1%8C%20%D0%B1%D1%83%D0%B4%D0%B5%D1%82%20%D1%80%D0%B0%D0%B2%D0%B5%D0%BD-,300,-%D0%BC%D1%81.%20%D0%A2%D0%BE%20%D0%B5%D1%81%D1%82%D1%8C) less than 200ms for Eurasia and no more than 400ms for any other region
 6. Adaptive layout
-7. No less than 99.9% uptime, as it is social media app I thimk this should be enough (~8h down per year)
+7. No less than 99.9% uptime, as it is social media app I think this should be enough (~8h down per year)
 8. Availability: using CDN for images and videos ([for example vk has more than 50](https://habr.com/ru/companies/vk/articles/575358/#:~:text=%D1%83%20%D0%92%D0%9A%D0%BE%D0%BD%D1%82%D0%B0%D0%BA%D1%82%D0%B5%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B5-,50%20CDN%2D%D0%BF%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BE%D0%BA,-%2C%20%D0%BD%D0%BE%20%D0%B4%D0%BB%D1%8F%20%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D1%8F))
 9. Portability - mobile, desktop and web versions
 10. User feed personalization
