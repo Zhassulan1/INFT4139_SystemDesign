@@ -23,8 +23,14 @@ To post photos videos, send messages, follow people, like posts, comment on post
 
 6. Considering backups and replication, we need 28.5 * 3 = 85.5 PB of storage
 7. At this point there should be used something like Amazon Glacier for rarely accessed data
-6. 1M RPS each on average 1KB = 1TB/s bandwith (64GB DDR5 RAM * 1500 ~= 1PB of RAM)
-7. One 64 bit 5GHz CPU can process 64 * 5 = 320 Billion bits/second = 40GB/s. To process 1 TB/second we need 10^12 / 4 * 10^10 = 250 CPU cores.
+6. 1M RPS each on average 1KB = 1TB/s bandwith
+
+        1 * 10^12 / 64 * 10^9  = 15625 RAM modules
+        64GB DDR5 * 15625 ~= 1PB of RAM
+
+7. One 64 bit 5GHz CPU can process 64 * 5 = 320 Billion bits/second = 40GB/s. To process 1 TB/second we need 10^12 / 4 * 10^10 = 25 CPU cores.
+
+    *(That is calculated for high performance gaming CPU, server cpu is like 5-8 times slower)*
 
 ### CAP theorem
 In my opinion AP is more suitable for this. Because users seeing slightly different comments, titles, likes, etc. is not a big problem. But data availability is very important, it has more priority than data being up to date

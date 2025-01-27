@@ -40,6 +40,22 @@ To communicate with friends, to see memes and news from different communities. T
 8. Availability: using CDN for images and videos ([for example vk has more than 50](https://habr.com/ru/companies/vk/articles/575358/#:~:text=%D1%83%20%D0%92%D0%9A%D0%BE%D0%BD%D1%82%D0%B0%D0%BA%D1%82%D0%B5%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B5-,50%20CDN%2D%D0%BF%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BE%D0%BA,-%2C%20%D0%BD%D0%BE%20%D0%B4%D0%BB%D1%8F%20%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D1%8F))
 9. Portability - mobile, desktop and web versions
 10. User feed personalization
+11. 6.3 Billon images/video, on average +6 every second. Assuming that average size of media file is 5MB, it is 30MB/s
+
+    For 5 years it is around 900 Million photos/videos, 4 PB of data in 5 years. Text messages and DB is way less, so it'll be ignored
+
+12. Considering backups and replication, we need 4 * 3 = 12 PB of storage. 
+13. At this point there should be used something like Amazon Glacier for rarely accessed data
+14. 1M RPS each on average 0.2KB = 200GB/s bandwith:
+    
+        0.2 * 10^12 / 64 * 10^9 = 3125 RAM modules
+        3125 * 64GB = 200TB RAM
+
+15. One 64 bit 5GHz CPU can process 64 * 5 = 320 Billion bits/second = 40GB/s. To process 200GB/second we need  20 * 10^10 / 4 * 10^10 = 5 CPU cores.
+
+    *(That is calculated for high performance gaming CPU, server cpu is like 5-8 times slower)*
+
+
 
 ### CAP theorem
 
