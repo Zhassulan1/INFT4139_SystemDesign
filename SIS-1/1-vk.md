@@ -33,7 +33,7 @@ To communicate with friends, to see memes and news from different communities. T
 1. Security: csrf, xss, sql injection, etc.
 2. DAU: [75M users](https://www.statista.com/statistics/1113226/vk-daily-active-users-via-mobile/) with addidtional capacity for future growth
 3. RPS: [200k for images](https://habr.com/ru/companies/vk/articles/594633/#:~:text=RPS%20%D1%81%201%20%D0%BC%D0%BB%D0%BD%20%D0%B4%D0%BE%20160%20%D1%82%D1%8B%D1%81%D1%8F%D1%87), [2M total](https://fomag.ru/news-streem/nagruzka-na-servery-vkontakte-za-2024-god-uvelichilas-na-35-vk-video-vtroe/#:~:text=%D0%B1%D0%BE%D0%BB%D0%B5%D0%B5%20%D0%B4%D0%B2%D1%83%D1%85%20%D0%BC%D0%B8%D0%BB%D0%BB%D0%B8%D0%BE%D0%BD%D0%BE%D0%B2%20%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D1%85%20%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81%D0%BE%D0%B2%20%D0%B2%20%D1%81%D0%B5%D0%BA%D1%83%D0%BD%D0%B4%D1%83)
-4. DOM content load less than 1000ms, general load less than 2000ms
+4. DOM content load less than 1000ms
 5. [RTT](https://habr.com/ru/companies/vk/articles/594633/#:~:text=%D0%BF%D0%B5%D1%80%D1%86%D0%B5%D0%BD%D1%82%D0%B8%D0%BB%D1%8C%20%D0%B1%D1%83%D0%B4%D0%B5%D1%82%20%D1%80%D0%B0%D0%B2%D0%B5%D0%BD-,300,-%D0%BC%D1%81.%20%D0%A2%D0%BE%20%D0%B5%D1%81%D1%82%D1%8C) less than 200ms for Eurasia and no more than 400ms for any other region
 6. Adaptive layout
 7. No less than 99.9% uptime, as it is social media app I think this should be enough (~8h down per year)
