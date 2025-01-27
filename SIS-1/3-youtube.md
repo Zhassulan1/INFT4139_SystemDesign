@@ -14,7 +14,7 @@ To watch videos, to learn
 
 ### Non-functional requirements:
 1. DAU [83M users](https://backlinko.com/youtube-users) Which is average of ~1000 users per second
-2. Current storage size [20 petabytes](https://toptechnova.com/how-much-data-storage-does-youtube-use#:~:text=library%20stretches%20over-,20%20petabytes,-.). Let's assume that every year it increases by 10%, so, for 5 years it will be 20 * 1.1^5 = 32.21 petabytes. We need 32.21 PB capacity for 5 years.
+2. Current storage size [20 petabytes](https://toptechnova.com/how-much-data-storage-does-youtube-use#:~:text=library%20stretches%20over-,20%20petabytes,-.). Let's assume that every year it increases by 10%, so, for 5 years it will be 20 * 1.1^5 = 32.21 PB. We need 32.21 PB capacity for 5 years.
 3. Average youtube page opening has 70 requests in 10 seconds = 7 requests per second from one user.
 5. Average user spends 50 min per day on youtube.
 2. I consider that each page loaded by simple HTTP requests without maintaining connection like websocket
