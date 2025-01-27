@@ -18,7 +18,7 @@ To communicate with people, for networking, watch other people success, to be mo
 1. Very consistent way of verification, logging in, restoring account  
 1. DAU [150M users](https://www.linkedin.com/pulse/daily-active-users-dau-joyce-j-shen/#:~:text=members%20and%20over-,140%20million%20DAU,-.%20So%20this%20is)
 2. [12M RPS](https://newsletter.systemdesigncodex.com/p/how-linkedin-authorizes-10-million), as article is almost one year old, and considering some additional capacity 12M RPS should be correct value
-3. DOM content load less than 1000ms, general load less than 5000ms
+3. DOM content load less than 1000ms
 4. RTT less than 200ms for North America and Europe and no more than 400ms for any other region
 5. Adaptive layout
 6. No less than 99.9% uptime, as it is a networking/hiring app I think this should not be too critical
