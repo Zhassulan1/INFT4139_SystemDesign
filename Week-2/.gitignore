@@ -1,0 +1,5 @@
+env
+.env
+junk*.py
+tokens.sql
+__pycache__
