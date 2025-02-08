@@ -1,20 +1,47 @@
-from locust import HttpUser, task, between
-from random import randint 
+from locust import FastHttpUser, task, constant
+from random import randint
+import redis
+
+# pool = redis.ConnectionPool(host='localhost', port=6379, db=1, max_connections=1000)
+r = redis.Redis(host='localhost', port=6379, db=1)
+
+def get_user_id():
+    data = r.get("user_id")
+
+    if not data:
+        user_id = 1
+    else:
+        user_id = int(data.decode()) + 1
+
+    r.set("user_id", user_id)
+    return user_id
 
 
-class User(HttpUser):
-    # wait_time = between(1, 5)
+
+class User(FastHttpUser):
+    wait_time = constant(0)
+    
+    def on_start(self):
+        # response = self.client.get(
+        #     "/user_id",
+        # )
+        # print("Response:", response.json())
+        # self.user_id = response.json()["user_id"]
+        self.user_id = get_user_id()
+        self.token = None
+        print(self.user_id)
+
+
     @task
-    def get_token(self):
-        TOKEN = "7184808c5349a7a26aca59d7dc6dc8c97c2754ddce298a11c587ea0cdf4ec9f73e0f15a714e0c8e79ebfbe5771b7d6745e31"
-        token = self.client.post(
-            "/token", 
-            json={"user_id": randint(1, 1000)},
-            headers={"Authorization": TOKEN}
+    def check_token(self):
+        response = self.client.post(
+            "/token",
+            json={"user_id": self.user_id},
         )
-        TOKEN = token.json()["token"]
-        # print(token.json()["token"])
-        self.client.get(
+        self.token = response.json()["token"]
+
+        self.client.post(
             "/check",
-            headers={"Authorization": TOKEN}
+            headers={"Authorization": self.token},
+            json={"user_id": self.user_id},
         )

@@ -17,30 +17,30 @@ pool = redis.ConnectionPool(host='localhost', port=6379, db=0, max_connections=1
 class User(BaseModel):
     user_id: int
 
-def verify(token: str):
-    r = redis.Redis(connection_pool=pool)
-    data = r.get(token)
-    if data:
-        return True, r.ttl(token)
-    return False, None
 
 
 @app.post("/token")
-async def get_token(user: User, req: Request):
-    token = req.headers["Authorization"]
-    valid, ttl = verify(token)
+async def get_token(user: User):
+    r = redis.Redis(connection_pool=pool)
+    data = r.get(user.user_id)
+    ttl = r.ttl(user.user_id)
 
-    if valid and ttl >= expiry_seconds * 0.25 :
-        return {"token": token}
+    if data and ttl >= expiry_seconds * 0.25 :
+        return {"token": data.decode()}
 
     token = secrets.token_hex(TOKEN_LENGTH)
 
     r = redis.Redis(connection_pool=pool)
-    r.setex(token, expiry_seconds, user.user_id)
+    r.setex(user.user_id, expiry_seconds, token)
     return {"token": token}
 
 
-@app.get("/check")
-async def check_token(req: Request):
+@app.post("/check")
+async def check_token(user:User, req: Request):
     token = req.headers["Authorization"]
-    return {"valid": verify(token)[0]}
+    r = redis.Redis(connection_pool=pool)
+    data = r.get(user.user_id)
+    
+    if data and data.decode() == token:
+        return {"valid": True}
+    return {"valid": False}
