@@ -8,7 +8,7 @@ Accepted
 
 Under the pressure of deadlines student had to create simple token management system.
 
-We needed to build an simple and efficient oauth based token management system that supports JWT-based authentication. The service must handle token creation, validation, and expiration in a performant manner while also managing user data securely. There was not much time, but a lot of work and testing to do. System will serve 1000 users and will handle a load of 20000 requests per second.
+I needed to build an simple and efficient oauth based token management system that supports JWT-based authentication. The service must handle token creation, validation, and expiration in a performant manner while also managing user data securely. There was not much time, but a lot of work and testing to do. System will serve 1000 users and will handle a load of 20000 requests per second.
 
 ## Decision
 
