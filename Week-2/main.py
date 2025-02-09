@@ -1,5 +1,7 @@
 """
 oauth with JWT in fastapi
+Single instance performance with 8 workers: 13,3k rps
+Multi-instance performance with 15 workers total: 14.1k rps
 """
 import os
 import datetime
@@ -50,13 +52,6 @@ class TokenResponse(BaseModel):
     model for token response
     """
     access_token: str
-    token_type: str = "bearer"
-
-class CheckRequest(BaseModel):
-    """
-    model for check request
-    """
-    user_id: int
 
 
 pg_pool = psycopg2.pool.SimpleConnectionPool(
@@ -164,17 +159,28 @@ async def access_token(token_request: TokenRequest):
     return {"access_token": new_token}
 
 
-@app.post("/check")
-async def check(check_request: CheckRequest, token: str = Depends(get_authorization_token)):
+@app.get("/check")
+async def check(token: str = Depends(get_authorization_token)):
     """
     check token status
     """
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        return {"status": "inactive", "scope": None}
+    except Exception as e:
+        print("\n\n\n\n\n Got invalid token: ", token, "\n")
+        raise e
+
     scopes = payload.get("scopes")
-    if scopes is None:
+    user_id = payload.get("user_id")
+    if scopes is None or user_id is None:
         return {"status": "inactive", "scope": None}
 
     redis_client = redis.Redis(connection_pool=redis_pool)
-    if int(redis_client.get(token)) == int(check_request.user_id):
+    stored_token = redis_client.get(token)
+    if not stored_token:
+        return {"status": "inactive", "scope": None}
+    if int(stored_token.decode()) == int(user_id):
         return {"status": "active", "scope": scopes}
     return {"status": "inactive", "scope": None}

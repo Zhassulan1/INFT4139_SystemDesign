@@ -1,6 +1,6 @@
 from locust import FastHttpUser, task, constant
-import random
-import string
+# import random
+# import string
 import secrets
 
 def register(client, name, password):
@@ -23,12 +23,8 @@ class User(FastHttpUser):
         self.name = secrets.token_hex(10)
         self.password = secrets.token_hex(10)
 
-        # self.name = ''.join(random.choices(string.ascii_letters, k=10))
-        # self.password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-
         self.user_id = int(register(self.client, self.name, self.password))
         self.token = None
-        # print(f"Registered user with user_id: {self.user_id}")
 
     @task
     def check_token(self):
@@ -39,13 +35,11 @@ class User(FastHttpUser):
                 "password": self.password
             },
         )
-        try:
-            self.token = response.json()["access_token"]
-        except Exception as e:
-            print("\n\n\nResponse text:", response.text)
-            print("\n\n\nError extracting token:", e.__str__())
-        self.client.post(
+
+        self.token = response.json()["access_token"]
+
+        self.client.get(
             "/check",
             headers={"Authorization": f"Bearer {self.token}"},
-            json={"user_id": self.user_id},
+            # json={"user_id": self.user_id},
         )
