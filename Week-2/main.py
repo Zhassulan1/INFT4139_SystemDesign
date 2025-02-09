@@ -10,7 +10,7 @@ import psycopg2
 from psycopg2 import pool
 import redis
 from fastapi import FastAPI, HTTPException, Depends, Header
-from passlib.context import CryptContext
+# from passlib.context import CryptContext
 # from fastapi.security import OAuth2PasswordBearer
 
 
@@ -26,7 +26,7 @@ ACCESS_TOKEN_EXPIRE_SECONDS = 3600
 REFRESH_THRESHOLD = int(ACCESS_TOKEN_EXPIRE_SECONDS * 0.25)
 
 # The password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 app = FastAPI()
 
@@ -34,7 +34,7 @@ app = FastAPI()
 class UserRegister(BaseModel):
     name: str
     password: str
-    scopes: str = Field(default="user", description="Comma-separated list of permission scopes.")
+    scopes: str = Field(default="user")
 
 class TokenRequest(BaseModel):
     user_id: int
@@ -50,7 +50,7 @@ class CheckRequest(BaseModel):
 
 pg_pool = psycopg2.pool.SimpleConnectionPool(
     minconn=36,
-    maxconn=195,
+    maxconn=95,
     user=DB_USERNAME,
     password=DB_PASSWORD,
     host=DB_HOST,
@@ -89,10 +89,12 @@ async def register_user(user: UserRegister):
     # try:
     cur = conn.cursor()
     # Hash the password before storing it in the database.
-    hashed_password = pwd_context.hash(user.password)
+    # hashed_password = pwd_context.hash(user.password)
     cur.execute(
         "INSERT INTO users (name, password, scopes) VALUES (%s, %s, %s) RETURNING id",
-        (user.name, hashed_password, user.scopes)
+        # (user.name, hashed_password, user.scopes)
+        (user.name, user.password, user.scopes)
+
     )
     user_id = cur.fetchone()[0]
     conn.commit()
@@ -119,8 +121,8 @@ async def login_for_access_token(token_request: TokenRequest):
         raise HTTPException(status_code=401, detail="Invalid user id or password")
     user_id, stored_password, name, scopes = result
     
-    if not pwd_context.verify(token_request.password, stored_password):
-        raise HTTPException(status_code=401, detail="Invalid user id or password")
+    # if not pwd_context.verify(token_request.password, stored_password):
+        # raise HTTPException(status_code=401, detail="Invalid user id or password")
     # except Exception as e:
         # print(f"Error verifying user credentials: {e}")
         # raise HTTPException(status_code=500, detail=str(e))
@@ -165,17 +167,17 @@ async def check_token(check_request: CheckRequest, token: str = Depends(get_auth
     The endpoint decodes the JWT and confirms that it exists in Redis.
     Returns only the token status and the user's scopes if the token is valid.
     """
-    try:
+    # try:
         # Decode and verify token (this checks signature and expiration).
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        scopes = payload.get("scopes")
-        if scopes is None:
-            return {"status": "inactive", "scope": None}
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    scopes = payload.get("scopes")
+    if scopes is None:
+        return {"status": "inactive", "scope": None}
             # raise HTTPException(status_code=401, detail="Invalid token payload")
     # except jwt.ExpiredSignatureError:
         # raise HTTPException(status_code=401, detail="Token has expired")
-    except jwt.PyJWTError:
-        return {"status": "inactive", "scope": None}
+    # except jwt.PyJWTError:
+        # return {"status": "inactive", "scope": None}
         # raise HTTPException(status_code=401, detail="Token verification failed")
 
     redis_client = redis.Redis(connection_pool=redis_pool)
