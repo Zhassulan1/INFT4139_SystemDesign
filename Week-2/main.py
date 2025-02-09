@@ -7,12 +7,12 @@ from pydantic import BaseModel, Field
 
 import jwt
 import psycopg2
-from psycopg2 import pool
+import psycopg2.pool
 import redis
 from fastapi import FastAPI, HTTPException, Depends, Header
 # from passlib.context import CryptContext
 # from fastapi.security import OAuth2PasswordBearer
-
+import hashlib
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET")
@@ -24,6 +24,8 @@ DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 ACCESS_TOKEN_EXPIRE_SECONDS = 3600
 REFRESH_THRESHOLD = int(ACCESS_TOKEN_EXPIRE_SECONDS * 0.25)
+
+HASH_SALT = os.getenv("HASH_SALT")
 
 # The password hashing context
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -88,12 +90,14 @@ async def register_user(user: UserRegister):
 
     # try:
     cur = conn.cursor()
-    # Hash the password before storing it in the database.
+    # TODO: Hash the password before storing it in the database.
     # hashed_password = pwd_context.hash(user.password)
+    # hashed_password = hash(HASH_SALT + user.password)
+    hashed_password = hashlib.md5((HASH_SALT + user.password).encode()).hexdigest()
     cur.execute(
         "INSERT INTO users (name, password, scopes) VALUES (%s, %s, %s) RETURNING id",
-        # (user.name, hashed_password, user.scopes)
-        (user.name, user.password, user.scopes)
+        (user.name, hashed_password, user.scopes)
+        # (user.name, user.password, user.scopes)
 
     )
     user_id = cur.fetchone()[0]
@@ -118,14 +122,20 @@ async def login_for_access_token(token_request: TokenRequest):
     cur.execute("SELECT id, password, name, scopes FROM users WHERE id = %s", (token_request.user_id,))
     result = cur.fetchone()
     if not result:
-        raise HTTPException(status_code=401, detail="Invalid user id or password")
-    user_id, stored_password, name, scopes = result
+        raise HTTPException(status_code=401)
+    user_id, password, name, scopes = result
+    # if hash(HASH_SALT + token_request.password) != int(password):
+    if hashlib.md5((HASH_SALT + token_request.password).encode()).hexdigest() != password:
+        print("HASH: ", hash(HASH_SALT + token_request.password))
+        print("PASSWORD: ", password)
+        raise HTTPException(status_code=401, detail="wrong password")
+
     
     # if not pwd_context.verify(token_request.password, stored_password):
-        # raise HTTPException(status_code=401, detail="Invalid user id or password")
+        # raise HTTPException(status_code=401)
     # except Exception as e:
         # print(f"Error verifying user credentials: {e}")
-        # raise HTTPException(status_code=500, detail=str(e))
+        # raise HTTPException(status_code=500)
     # finally:
     cur.close()
     pg_pool.putconn(conn)
@@ -146,16 +156,16 @@ async def login_for_access_token(token_request: TokenRequest):
             redis_client.setex(new_token, ACCESS_TOKEN_EXPIRE_SECONDS, user_id)
             redis_client.setex(user_id, ACCESS_TOKEN_EXPIRE_SECONDS, new_token)
             return {"access_token": new_token}
-        else:
+        # else:
             # Return the still-valid token.
-            return {"access_token": old_token}
-    else:
-        payload = {"user_id": user_id, "name": name, "scopes": scopes}
-        new_token = create_access_token(payload)
+        return {"access_token": old_token}
+    # else:
+    payload = {"user_id": user_id, "name": name, "scopes": scopes}
+    new_token = create_access_token(payload)
 
-        redis_client.setex(new_token, ACCESS_TOKEN_EXPIRE_SECONDS, int(user_id))
-        redis_client.setex(user_id, ACCESS_TOKEN_EXPIRE_SECONDS, new_token)
-        return {"access_token": new_token}
+    redis_client.setex(new_token, ACCESS_TOKEN_EXPIRE_SECONDS, int(user_id))
+    redis_client.setex(user_id, ACCESS_TOKEN_EXPIRE_SECONDS, new_token)
+    return {"access_token": new_token}
 
 
 @app.post("/check")
@@ -183,8 +193,8 @@ async def check_token(check_request: CheckRequest, token: str = Depends(get_auth
     redis_client = redis.Redis(connection_pool=redis_pool)
     if int(redis_client.get(token)) == check_request.user_id:
         return {"status": "active", "scope": scopes}
-    else:
-        return {"status": "inactive", "scope": None}
+    # else:
+    return {"status": "inactive", "scope": None}
         # raise HTTPException(status_code=401, detail="Token not found or expired in store")
 
 
