@@ -1,0 +1,10 @@
+fuser -k 8001/tcp
+fuser -k 8002/tcp
+fuser -k 8003/tcp
+fuser -k 8004/tcp
+fuser -k 8005/tcp
+fuser -k 8006/tcp
+fuser -k 8007/tcp
+fuser -k 8008/tcp
+fuser -k 8009/tcp
+fuser -k 8010/tcp
