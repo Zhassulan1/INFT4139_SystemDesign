@@ -1,3 +1,8 @@
+"""
+for python 10 workers
+for golang 15 workers
+"""
+
 from locust import FastHttpUser, task, constant
 # import random
 # import string

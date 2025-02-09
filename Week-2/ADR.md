@@ -1,35 +1,57 @@
-# Using Fastapi and Redis to manage tokens (Python)
+# Using Fastapi, PostgreSQL and Redis to manage tokens (Python)
 
 ## Status
+
 Accepted
 
 ## Context
-Under the pressure of deadlines student had to create simple token management system. There was not much time, but a lot of work and testing to do. System will serve 1000 users and will handle a load of 20000 requests per second.
+
+Under the pressure of deadlines student had to create simple token management system.
+
+We needed to build an simple and efficient oauth based token management system that supports JWT-based authentication. The service must handle token creation, validation, and expiration in a performant manner while also managing user data securely. There was not much time, but a lot of work and testing to do. System will serve 1000 users and will handle a load of 20000 requests per second.
 
 ## Decision
-I decided to adopt FastAPI for building our API endpoints and Redis as our in-memory datastore for token management. The main reasons for this decision include:
 
-FastAPI Advantages:
-Asynchronous Support - FastAPI natively supports async endpoints.
+We decided to implement the authentication service using FastAPI for the API layer and Redis for JWT token storage, with user data maintained in PostgreSQL via psycopg2.
 
-Performance - FastAPI is designed for high performance and low latency.
+FastAPI:
 
-Redis Advantages:
+Asynchronous and High Performance: FastAPI uses asynchronous programming, which allows it to handle a large number of concurrent requests.
+
+Developer Productivity: FastAPI offers automatic generation of OpenAPI and JSON Schema, built-in validation, and dependency injection. These features reduce boilerplate code and accelerate development.
+
+Modern Python Features: It utilizes modern Python type hints, leading to improved code quality and maintainability.
+
+
+Redis:
+
 Low Latency and High Throughput - Redis provides extremely fast read/write operations and is well‑suited for caching and session management.
 
-Built‑in Expiry Mechanism: The ability to set key expirations (e.g., using the SETEX command) is ideal for managing tokens that must expire automatically after a given period.
+Built-in Expiration: Redis natively supports key expiration, making it useful invalidate tokens. This reduces the need for cleanup logic in the application.
 
+
+PostgreSQL with psycopg2:
+
+Data Integrity and Security: PostgreSQL offers ACID properties, which are useful for managing sensitive user information.
+
+Reliability: The psycopg2 adapter is a well-supported PostgreSQL driver, ensuring reliable communication with the database.
 
 ## Consequences
-What Becomes Easier:
 
-High Concurrency and Throughput - With asynchronous request handling in FastAPI and connection pooling in Redis, the system can handle a higher number of requests per second (RPS) with reduced latency.
+Positive Outcomes
 
-Token Expiry - Redis’ native key expiration features simplify token lifecycle management without additional overhead in the application code.
+Enhanced Performance: The asynchronous FastAPI and Redis's fast in-memory data storing gives low-latency responses under high load.
 
-What Becomes More Difficult:
+Efficient Session Management: Redis's built-in expiration mechanism simplifies token lifecycle management, reducing application complexity.
 
-Operational Complexity - Introducing Redis (especially in a clustered or production environment) may require additional operational considerations such as monitoring, backup, and scaling.
+Rapid Development and Maintainability: FastAPI's automatic documentation speed up development, testing.
 
-Overall, the combination of FastAPI and Redis addresses the performance bottlenecks while introducing manageable operational complexity, making it the best fit for token management needs.
+Robust Security: User data is stored securely in PostgreSQL.
 
+Negative Outcomes
+
+Operational Complexity: Maintaining and orchestrating two distinct databases (Redis for JWT tokens and PostgreSQL for user data) introduces additional operational complexity.
+
+Monitoring and Debugging: Coordinating logs, metrics, and error tracking across multiple services requires careful design and monitoring tools to ensure smooth operation.
+
+Overall, the use of FastAPI and Redis with PostgreSQL for persistent storage, effective, scalable, and maintainable solution for our authentication service. 
