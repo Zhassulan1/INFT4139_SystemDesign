@@ -1,47 +1,51 @@
 from locust import FastHttpUser, task, constant
-from random import randint
-import redis
+import random
+import string
+import secrets
 
-# pool = redis.ConnectionPool(host='localhost', port=6379, db=1, max_connections=1000)
-r = redis.Redis(host='localhost', port=6379, db=1)
+def register(client, name, password):
+    response = client.post("/user", json={"name": name, "password": password})
+    try:
+        data = response.json()
+    except Exception as e:
+        print("\n\n\nError parsing response:")
+        raise e
 
-def get_user_id():
-    data = r.get("user_id")
-
-    if not data:
-        user_id = 1
-    else:
-        user_id = int(data.decode()) + 1
-
-    r.set("user_id", user_id)
-    return user_id
-
-
+    if response.status_code > 201:
+        print(f"Registration failed with status code: {response.status_code}")
+        print(response.text)
+    return data.get("user_id")
 
 class User(FastHttpUser):
     wait_time = constant(0)
     
     def on_start(self):
-        # response = self.client.get(
-        #     "/user_id",
-        # )
-        # print("Response:", response.json())
-        # self.user_id = response.json()["user_id"]
-        self.user_id = get_user_id()
-        self.token = None
-        print(self.user_id)
+        self.name = secrets.token_hex(10)
+        self.password = secrets.token_hex(10)
 
+        # self.name = ''.join(random.choices(string.ascii_letters, k=10))
+        # self.password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
+        self.user_id = int(register(self.client, self.name, self.password))
+        self.token = None
+        # print(f"Registered user with user_id: {self.user_id}")
 
     @task
     def check_token(self):
         response = self.client.post(
             "/token",
-            json={"user_id": self.user_id},
+            json={
+                "user_id": self.user_id,
+                "password": self.password
+            },
         )
-        self.token = response.json()["token"]
-
+        try:
+            self.token = response.json()["access_token"]
+        except Exception as e:
+            print("\n\n\nResponse text:", response.text)
+            print("\n\n\nError extracting token:", e.__str__())
         self.client.post(
             "/check",
-            headers={"Authorization": self.token},
+            headers={"Authorization": f"Bearer {self.token}"},
             json={"user_id": self.user_id},
         )
