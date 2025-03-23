@@ -1,1 +1,5 @@
 P1
+env
+.env
+*.log
+last_sync.txt
