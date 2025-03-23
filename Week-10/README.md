@@ -1,7 +1,7 @@
 # Data Transfer
 
 ### 1. General approach
-**For full copy for the first time** I select all rows from tables of database A, and insert to tab;es of database B.
+**For full copy for the first time** I select all rows from tables of database A, and insert to tables of database B.
 
 **For synchronization**, I will use additional columns like `updated_at` and `created_at` to detect updated row or new row. We supposed that there are some ML model that gives all recommendations with the same `created_at` for all new rows. \
 For example: new recommendations are ready at 01:20, and there are millions of rows with that `created_at`, we will launch updates at 01:21. As a result all rows with the same time are syncronised. 
