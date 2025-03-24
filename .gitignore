@@ -3,4 +3,4 @@ env
 .env
 *.log
 last_sync.txt
-*cache
+*cache*
