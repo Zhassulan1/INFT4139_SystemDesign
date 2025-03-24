@@ -31,7 +31,7 @@ psycopg2 because: I am familiar with this library, and have used multiple times.
 
 
 ## How to run
-Make sure that your Databases have folliwing tables, with same columns: [users](users.sql), [products](products.sql), [recommendations](recommendations.sql).
+Make sure that your Databases have folliwing tables, with same columns: [users](./migrations/users.sql), [products](./migrations/products.sql), [recommendations](./migrations/recommendations.sql).
 
 To copy all rows from source to target:
 ~~~ bash
@@ -44,3 +44,7 @@ To run syncronization (updates and new rows):
 ~~~ bash
 python db_transfer.py --mode sync --source source_db --target target_db
 ~~~
+
+
+---
+To fill db you can use [generate.sql](./migrations/generate.sql).

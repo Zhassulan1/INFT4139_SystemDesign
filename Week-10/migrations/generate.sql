@@ -1,3 +1,5 @@
+-- Used to fill tables
+
 DELETE FROM recommendations;
 DELETE FROM users;
 DELETE FROM products;
@@ -8,11 +10,13 @@ SELECT
     'user' || gs || '@example.com'
 FROM generate_series(1,20000) AS gs;
 
+
 INSERT INTO products (name, price)
 SELECT 
     'Product ' || gs,
     round((random() * 100)::numeric, 2)
 FROM generate_series(1,20000) AS gs;
+
 
 INSERT INTO recommendations (user_id, product_id)
 SELECT 
