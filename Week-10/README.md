@@ -36,14 +36,14 @@ Make sure that your Databases have folliwing tables, with same columns: [users](
 
 To copy all rows from source to target:
 ~~~ bash
-python db_transfer.py --mode copy --source source_db --target target_db --workers 20
+python transfer.py --mode copy --source source_db --target target_db --workers 20
 ~~~
 *(deletes old rows in target and inserts new rows from source)*
 
 
 To run syncronization (updates and new rows):
 ~~~ bash
-python db_transfer.py --mode sync --source source_db --target target_db --workers 20
+python transfer.py --mode sync --source source_db --target target_db --workers 20
 ~~~
 
 
