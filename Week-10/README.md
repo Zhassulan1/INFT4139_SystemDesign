@@ -13,6 +13,7 @@ To read data from Source DB we will use **Reapeatable Read** isolation level. so
 **To speed up** the proccess I will use multiple worker instances for transaction.
 
 **To maintain atomicity** I will use Saga pattern. Using Saga gives abbility to restart failed workers and be without worrying that there will be repeated rows.
+After synchronization or copying I will check if data was moved correctly.
 
 ### 2. Tools
 
@@ -27,22 +28,22 @@ psycopg2 because: I am familiar with this library, and have used multiple times.
 4. Updates during synchronization or copying.
 5. Workers may fail.
 
-
-
+### 4. Validation
+To validate data integrity I calculated hashes for tables in each database and compared them. Also (just in case, to be sure) I counted number of rows in each database and compared them too.
 
 ## How to run
 Make sure that your Databases have folliwing tables, with same columns: [users](./migrations/users.sql), [products](./migrations/products.sql), [recommendations](./migrations/recommendations.sql).
 
 To copy all rows from source to target:
 ~~~ bash
-python db_transfer.py --mode copy --source source_db --target target_db
+python db_transfer.py --mode copy --source source_db --target target_db --workers 20
 ~~~
 *(deletes old rows in target and inserts new rows from source)*
 
 
 To run syncronization (updates and new rows):
 ~~~ bash
-python db_transfer.py --mode sync --source source_db --target target_db
+python db_transfer.py --mode sync --source source_db --target target_db --workers 20
 ~~~
 
 
